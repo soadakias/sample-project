@@ -1,0 +1,1 @@
+insert into specifier values ('X'),('1'),('2');

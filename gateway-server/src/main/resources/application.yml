@@ -1,0 +1,164 @@
+server:
+  port: 9999
+  shutdown: graceful
+
+
+spring:
+  application:
+    name: gateway-server
+  config:
+    activate:
+      on-profile: local-dev
+  cloud:
+    discovery:
+      enabled: true
+      client:
+        health-indicator:
+          enabled: true
+    #    config:
+#      fail-fast: true
+#      discovery:
+#        enabled: true
+#        service-id: config-server
+#      retry:
+#        initialInterval: 2000
+#        multiplier: 1.5
+#        maxInterval: 60000
+#        maxAttempts: 100
+    gateway:
+      #      globalcors:
+#        corsConfigurations:
+#          '[/**]':
+#            allowedOrigins: "*"
+#            allowedHeaders: "*"
+#            allowedMethods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#              - OPTIONS
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: demo-app
+              uri: lb://demo-app
+              predicates:
+              - Path=/api/demo-app/**
+          httpclient:
+            pool:
+              max-connections: 500
+              max-idle-time: 60s
+              max-life-time: 300s
+              type: fixed
+            compression: true
+            connect-timeout: 60000
+            response-timeout: 60s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+eureka:
+  client:
+    healthcheck:
+      enabled: false
+    serviceUrl:
+      defaultZone: http://${eureka.host:127.0.0.1}:${eureka.port:8761}/eureka/
+  instance:
+    preferIpAddress: true
+
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.company.gatewayserver: DEBUG
+
+---
+server:
+  port: 9999
+  shutdown: graceful
+
+spring:
+  application:
+    name: gateway-server
+  config:
+    activate:
+      on-profile: docker-dev
+  cloud:
+    discovery:
+      enabled: true
+      client:
+        health-indicator:
+          enabled: true
+    #    config:
+    #      fail-fast: true
+    #      discovery:
+    #        enabled: true
+    #        service-id: config-server
+    #      retry:
+    #        initialInterval: 2000
+    #        multiplier: 1.5
+    #        maxInterval: 60000
+    #        maxAttempts: 100
+    gateway:
+      #      globalcors:
+      #        corsConfigurations:
+      #          '[/**]':
+      #            allowedOrigins: "*"
+      #            allowedHeaders: "*"
+      #            allowedMethods:
+      #              - GET
+      #              - POST
+      #              - PUT
+      #              - DELETE
+      #              - OPTIONS
+      server:
+        webflux:
+          #          discovery:
+          #            locator:
+          #              enabled: true
+          #              lower-case-service-id: true
+          routes:
+            - id: demo-app
+              uri: lb://demo-app
+              predicates:
+                - Path=/api/demo-app/**
+          httpclient:
+            pool:
+              max-connections: 500
+              max-idle-time: 60s
+              max-life-time: 300s
+              type: fixed
+            compression: true
+            connect-timeout: 60000
+            response-timeout: 60s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+eureka:
+  client:
+    healthcheck:
+      enabled: false
+    serviceUrl:
+      defaultZone: http://${eureka.host:eureka-server}:${eureka.port:8761}/eureka/
+  instance:
+    preferIpAddress: true
+
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.company.gatewayserver: DEBUG
+
+
+

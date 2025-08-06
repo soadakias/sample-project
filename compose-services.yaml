@@ -1,0 +1,60 @@
+services:
+  postgres_db:
+    container_name: postgres_db
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: toor
+      PGDATA: /data/postgres_db
+    volumes:
+      - ./db/init_db.sql:/docker-entrypoint-initdb.d/db.sql
+      - postgres_db:/data/postgres_db
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - postgres_db
+  eureka-server:
+    container_name: eureka-server
+#    image: eureka-server
+    build:
+      dockerfile: eureka-server/Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - spring
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker-dev
+  gateway-server:
+    container_name: gateway-server
+#    image: gateway-server
+    build:
+      dockerfile: gateway-server/Dockerfile
+    ports:
+      - "9999:9999"
+    networks:
+      - spring
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker-dev
+  demo-app:
+    container_name: demo_app
+    #    image: gateway-server
+    build:
+      dockerfile: demo_app/Dockerfile
+    ports:
+      - "9001:9001"
+    networks:
+      - spring
+      - postgres_db
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker-dev
+
+volumes:
+  postgres_db:
+  pgadmin:
+
+networks:
+  postgres_db:
+    driver: bridge
+  spring:
+    driver: bridge

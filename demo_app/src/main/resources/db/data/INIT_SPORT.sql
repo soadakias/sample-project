@@ -1,0 +1,1 @@
+insert into sport values ('FOOTBALL'),('BASKETBALL'),('BASEBALL'),('VOLLEYBALL');
